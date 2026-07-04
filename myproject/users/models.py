@@ -58,3 +58,20 @@ class Payment(models.Model):
     ]
 
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+    )
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+    )
+
+    def __str__(self):
+        return f"{self.user} -> {self.course}"

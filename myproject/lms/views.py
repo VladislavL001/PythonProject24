@@ -4,11 +4,13 @@ from rest_framework.viewsets import ModelViewSet
 
 from users.permissions import IsModerator, IsOwner
 from .models import Course, Lesson
+from .paginators import LessonAndCoursePagination
 from .serializers import CourseSerializer, LessonSerializer
 
 
 class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
+    pagination_class = LessonAndCoursePagination
 
     def get_queryset(self):
         if self.request.user.groups.filter(name="Moderators").exists():
@@ -52,6 +54,7 @@ class CourseViewSet(ModelViewSet):
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
+    pagination_class = LessonAndCoursePagination
 
     def get_queryset(self):
         if self.request.user.groups.filter(name="Moderators").exists():
