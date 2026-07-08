@@ -9,6 +9,13 @@ from .serializers import UserSerializer, PaymentSerializer, RegisterSerializer
 from lms.models import Course
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, OpenApiExample
+from .services import (
+    create_product,
+    create_price,
+    create_session,
+)
+
 
 class PaymentListAPIView(generics.ListAPIView):
     queryset = Payment.objects.all()
@@ -28,18 +35,38 @@ class PaymentListAPIView(generics.ListAPIView):
         "payment_date",
     ]
 
+@extend_schema(tags=["Users"],)
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+@extend_schema(tags=["Payments"],)
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
+@extend_schema(
+    tags=["Subscriptions"],
+    summary="Подписка на курс",
+    description="Добавляет или удаляет подписку пользователя на курс."
+)
 class SubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="Подписаться или отписаться от курса",
+        description="Если подписка существует — удаляет её, иначе создает.",
+        examples=[
+            OpenApiExample(
+                "Пример запроса",
+                value={
+                    "course_id": 1,
+                },
+                request_only=True,
+            ),
+        ],
+    )
     def post(self, request):
         user = request.user
 
@@ -71,3 +98,25 @@ class SubscriptionAPIView(APIView):
                 "message": message
             }
         )
+
+class PaymentCreateAPIView(generics.CreateAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+    def perform_create(self, serializer):
+
+        payment = serializer.save(
+            user=self.request.user
+        )
+
+        product = create_product(payment)
+
+        price = create_price(
+            payment,
+            product,
+        )
+
+        session = create_session(price)
+
+        payment.payment_link = session.url
+        payment.save()

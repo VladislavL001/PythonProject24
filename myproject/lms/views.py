@@ -6,8 +6,10 @@ from users.permissions import IsModerator, IsOwner
 from .models import Course, Lesson
 from .paginators import LessonAndCoursePagination
 from .serializers import CourseSerializer, LessonSerializer
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Courses"],)
 class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = LessonAndCoursePagination
@@ -51,7 +53,7 @@ class CourseViewSet(ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
-
+@extend_schema(tags=["Lessons"],)
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
     pagination_class = LessonAndCoursePagination
@@ -79,6 +81,7 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
         return [permission() for permission in permission_classes]
 
 
+@extend_schema(tags=["Lessons"],)
 class LessonRetrieveUpdateDestroyAPIView(
     generics.RetrieveUpdateDestroyAPIView
 ):
@@ -104,3 +107,6 @@ class LessonRetrieveUpdateDestroyAPIView(
             ]
 
         return [permission() for permission in permission_classes]
+
+
+

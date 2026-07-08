@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import PaymentListAPIView, UserViewSet, RegisterAPIView, SubscriptionAPIView
+from .views import PaymentListAPIView, UserViewSet, RegisterAPIView, SubscriptionAPIView, PaymentCreateAPIView
 
 router = DefaultRouter()
 
@@ -13,4 +13,6 @@ urlpatterns = [
     path("subscription/", SubscriptionAPIView.as_view(), name="subscription"),
 
     path("", include(router.urls)),
+
+    path("payment/create/", PaymentCreateAPIView.as_view(), name="payment-create"),
 ]
