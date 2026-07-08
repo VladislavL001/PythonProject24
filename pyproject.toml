@@ -12,7 +12,12 @@ dependencies = [
     "djangorestframework (>=3.17.1,<4.0.0)",
     "pillow (>=12.2.0,<13.0.0)",
     "psycopg[binary] (>=3.3.4,<4.0.0)",
-    "djangorestframework-stubs (>=3.17.0,<4.0.0)"
+    "djangorestframework-stubs (>=3.17.0,<4.0.0)",
+    "django-filter (>=25.2,<26.0)",
+    "djangorestframework-simplejwt (>=5.5.1,<6.0.0)",
+    "drf-spectacular (>=0.30.0,<0.31.0)",
+    "stripe (>=15.3.0,<16.0.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)"
 ]
 
 
@@ -28,6 +33,9 @@ lint = [
     "mypy (>=2.1.0,<3.0.0)",
     "django-stubs (>=6.0.6,<7.0.0)",
     "djangorestframework-stubs (>=3.17.0,<4.0.0)"
+]
+dev = [
+    "coverage (>=7.15.0,<8.0.0)"
 ]
 
 [tool.black]

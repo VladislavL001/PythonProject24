@@ -59,6 +59,12 @@ class Payment(models.Model):
 
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
 
+    payment_link = models.URLField(
+        blank=True,
+        null=True,
+        max_length=1000,
+    )
+
 
 class Subscription(models.Model):
     user = models.ForeignKey(
