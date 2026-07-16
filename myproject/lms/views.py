@@ -7,6 +7,7 @@ from .models import Course, Lesson
 from .paginators import LessonAndCoursePagination
 from .serializers import CourseSerializer, LessonSerializer
 from drf_spectacular.utils import extend_schema
+from users.tasks import send_course_update
 
 
 @extend_schema(tags=["Courses"],)
@@ -21,6 +22,11 @@ class CourseViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+
+        send_course_update.delay(course.id)
 
     def get_permissions(self):
 
@@ -52,6 +58,7 @@ class CourseViewSet(ModelViewSet):
             ]
 
         return [permission() for permission in permission_classes]
+
 
 @extend_schema(tags=["Lessons"],)
 class LessonListCreateAPIView(generics.ListCreateAPIView):
