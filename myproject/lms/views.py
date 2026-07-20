@@ -7,8 +7,11 @@ from .models import Course, Lesson
 from .paginators import LessonAndCoursePagination
 from .serializers import CourseSerializer, LessonSerializer
 from drf_spectacular.utils import extend_schema
-from users.tasks import send_course_update
+from django.db import transaction
+from datetime import timedelta
+from django.utils import timezone
 
+from users.tasks import send_course_update
 
 @extend_schema(tags=["Courses"],)
 class CourseViewSet(ModelViewSet):
@@ -24,9 +27,16 @@ class CourseViewSet(ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def perform_update(self, serializer):
+        course = self.get_object()
+
+        send_notification = (timezone.now() - course.updated_at) > timedelta(hours=4)
+
         course = serializer.save()
 
-        send_course_update.delay(course.id)
+        if send_notification:
+            transaction.on_commit(
+                lambda: send_course_update.delay(course.id)
+            )
 
     def get_permissions(self):
 
