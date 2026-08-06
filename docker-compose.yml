@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    env_file:
+      - myproject/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+  redis:
+    image: redis:8
+    restart: always
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+
+  web:
+    build: .
+    working_dir: /app/myproject
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - myproject/.env
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    working_dir: /app/myproject
+    command: celery -A config worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - myproject/.env
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: .
+    working_dir: /app/myproject
+    command: celery -A config beat -l info
+    volumes:
+      - .:/app
+    env_file:
+      - myproject/.env
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:
