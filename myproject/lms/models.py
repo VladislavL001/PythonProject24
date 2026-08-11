@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class Course(models.Model):
     name = models.CharField(max_length=200)
@@ -8,7 +9,9 @@ class Course(models.Model):
 
     description = models.TextField(blank=True, null=True)
 
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="courses",

@@ -1,7 +1,9 @@
-from dotenv import load_dotenv
 import os
 from pathlib import Path
+
 from celery.schedules import crontab
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,10 +47,9 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-            "rest_framework_simplejwt.authentication.JWTAuthentication",
-        ],
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    
 }
 
 MIDDLEWARE = [
@@ -101,7 +102,8 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation"
+                ".UserAttributeSimilarityValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -139,7 +141,6 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Документация API проекта LMS",
     "VERSION": "1.0.0",
 }
-
 
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")

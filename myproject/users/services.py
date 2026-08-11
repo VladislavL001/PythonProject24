@@ -7,9 +7,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def create_product(payment):
     """Создает продукт в Stripe."""
 
-    product = stripe.Product.create(
-        name=payment.course.name
-    )
+    product = stripe.Product.create(name=payment.course.name)
 
     return product
 

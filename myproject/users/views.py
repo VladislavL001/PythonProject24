@@ -1,18 +1,19 @@
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiExample, extend_schema
+from lms.models import Course
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from .models import User, Payment, Subscription
-from .serializers import UserSerializer, PaymentSerializer, RegisterSerializer
-from lms.models import Course
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+
+from .models import Payment, Subscription, User
+from .serializers import PaymentSerializer, RegisterSerializer, UserSerializer
 from .services import (
-    create_product,
     create_price,
+    create_product,
     create_session,
 )
 
@@ -35,21 +36,28 @@ class PaymentListAPIView(generics.ListAPIView):
         "payment_date",
     ]
 
-@extend_schema(tags=["Users"],)
+
+@extend_schema(
+    tags=["Users"],
+)
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
-@extend_schema(tags=["Payments"],)
+
+@extend_schema(
+    tags=["Payments"],
+)
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
+
 @extend_schema(
     tags=["Subscriptions"],
     summary="Подписка на курс",
-    description="Добавляет или удаляет подписку пользователя на курс."
+    description="Добавляет или удаляет подписку пользователя на курс.",
 )
 class SubscriptionAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -93,11 +101,8 @@ class SubscriptionAPIView(APIView):
             )
             message = "Подписка добавлена"
 
-        return Response(
-            {
-                "message": message
-            }
-        )
+        return Response({"message": message})
+
 
 class PaymentCreateAPIView(generics.CreateAPIView):
     queryset = Payment.objects.all()
@@ -105,9 +110,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
 
-        payment = serializer.save(
-            user=self.request.user
-        )
+        payment = serializer.save(user=self.request.user)
 
         product = create_product(payment)
 
