@@ -9,6 +9,4 @@ class YouTubeValidator:
         url = value.get(self.field)
 
         if url and "youtube.com" not in url:
-            raise ValidationError(
-                "Разрешены только ссылки на youtube.com"
-            )
+            raise ValidationError("Разрешены только ссылки на youtube.com")

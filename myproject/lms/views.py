@@ -1,19 +1,22 @@
+from datetime import timedelta
+
+from django.db import transaction
+from django.utils import timezone
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-
 from users.permissions import IsModerator, IsOwner
+from users.tasks import send_course_update
+
 from .models import Course, Lesson
 from .paginators import LessonAndCoursePagination
 from .serializers import CourseSerializer, LessonSerializer
-from drf_spectacular.utils import extend_schema
-from django.db import transaction
-from datetime import timedelta
-from django.utils import timezone
 
-from users.tasks import send_course_update
 
-@extend_schema(tags=["Courses"],)
+@extend_schema(
+    tags=["Courses"],
+)
 class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = LessonAndCoursePagination
@@ -34,9 +37,7 @@ class CourseViewSet(ModelViewSet):
         course = serializer.save()
 
         if send_notification:
-            transaction.on_commit(
-                lambda: send_course_update.delay(course.id)
-            )
+            transaction.on_commit(lambda: send_course_update.delay(course.id))
 
     def get_permissions(self):
 
@@ -70,7 +71,9 @@ class CourseViewSet(ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-@extend_schema(tags=["Lessons"],)
+@extend_schema(
+    tags=["Lessons"],
+)
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = LessonSerializer
     pagination_class = LessonAndCoursePagination
@@ -98,10 +101,10 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
         return [permission() for permission in permission_classes]
 
 
-@extend_schema(tags=["Lessons"],)
-class LessonRetrieveUpdateDestroyAPIView(
-    generics.RetrieveUpdateDestroyAPIView
-):
+@extend_schema(
+    tags=["Lessons"],
+)
+class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LessonSerializer
 
     def get_queryset(self):
@@ -124,6 +127,3 @@ class LessonRetrieveUpdateDestroyAPIView(
             ]
 
         return [permission() for permission in permission_classes]
-
-
-

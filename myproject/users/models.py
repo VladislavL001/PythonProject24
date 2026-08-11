@@ -1,6 +1,5 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-from django.contrib.auth.models import BaseUserManager
 from lms.models import Course, Lesson
 
 
@@ -25,6 +24,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractUser):
     username = None
 
@@ -45,8 +45,12 @@ class User(AbstractUser):
 class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
     payment_date = models.DateField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, related_name="payments")
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, blank=True, null=True, related_name="payments")
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, blank=True, null=True, related_name="payments"
+    )
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, blank=True, null=True, related_name="payments"
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     CASH = "cash"

@@ -1,8 +1,8 @@
+from datetime import timedelta
+
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
-from datetime import timedelta
-
 from django.utils import timezone
 from users.models import Subscription, User
 
@@ -24,7 +24,8 @@ def send_course_update(course_id):
     if emails:
         send_mail(
             subject="Курс был обновлен",
-            message="Материалы курса были обновлены. Зайдите в личный кабинет и ознакомьтесь с изменениями.",
+            message="Материалы курса были обновлены. Зайдите в личный кабинет"
+                    " и ознакомьтесь с изменениями.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=emails,
             fail_silently=False,
